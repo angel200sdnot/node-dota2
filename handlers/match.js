@@ -258,3 +258,11 @@ var onTopFriendMatchesResponse = function onTopFriendMatchesResponse(message) {
 
 };
 handlers[Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCToClientTopFriendMatchesResponse] = onTopFriendMatchesResponse;
+
+var onMatchSignedOut = function onMatchSignedOut(message) {
+    var matchData = Dota2.schema.lookupType("CMsgGCToClientMatchSignedOut").decode(message);
+
+    this.Logger.debug("Received matchSignedOut for match id " + matchData.match_id);
+    this.emit("matchSignedOut", matchData.match_id);
+};
+handlers[Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCToClientMatchSignedOut] = onMatchSignedOut;
