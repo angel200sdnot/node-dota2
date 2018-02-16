@@ -159,17 +159,22 @@ Dota2.Dota2Client = function Dota2Client(steamClient, debug, debugMore) {
         /* Routes messages from Game Coordinator to their handlers. */
         callback = callback || null;
 
-        var kMsg = header.msg;
-        self.Logger.silly("Dota2 fromGC: " + Dota2._getMessageName(kMsg));
+        try {
+            var kMsg = header.msg;
+            self.Logger.silly("Dota2 fromGC: " + Dota2._getMessageName(kMsg));
 
-        if (kMsg in self._handlers) {
-            if (callback) {
-                self._handlers[kMsg].call(self, body, callback);
+            if (kMsg in self._handlers) {
+                if (callback) {
+                    self._handlers[kMsg].call(self, body, callback);
+                } else {
+                    self._handlers[kMsg].call(self, body);
+                }
             } else {
-                self._handlers[kMsg].call(self, body);
+                self.emit("unhandled", kMsg, Dota2._getMessageName(kMsg));
             }
-        } else {
-            self.emit("unhandled", kMsg, Dota2._getMessageName(kMsg));
+        } catch (error) {
+            self.Logger.error("Error on _gc message", error)
+            self.emit("error", error);
         }
     });
 
